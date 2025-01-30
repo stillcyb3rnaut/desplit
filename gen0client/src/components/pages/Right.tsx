@@ -40,7 +40,7 @@ export function Right() {
         }
 
         apiCall();
-    }, [hash, address]);
+    }, [backendUrl,hash, address]);
 
     useEffect(() => {
         setHash(window.location.hash); // Get current hash

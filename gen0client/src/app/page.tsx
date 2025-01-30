@@ -1,6 +1,5 @@
 'use client'
-
-import { Left } from "@/components/pages/Left";
+ import { Left } from "@/components/pages/Left";
 import { Mid } from "@/components/pages/Mid";
 import { Right } from "@/components/pages/Right";
 import { ConnectButton } from "@/components/utils/reownConnectButton";
@@ -46,7 +45,7 @@ export default function Home() {
     };
 
     verifyAddress();
-  }, [address, isConnected]);
+  }, [address, isConnected,backendUrl]);
 
 
 

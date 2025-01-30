@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-// import ContextProvider from '@/context'
-// import { headers } from 'next/headers' // added
+ import { headers } from 'next/headers' // added
 import ContextProvider from '@/context';
 
 const geistSans = Geist({
@@ -26,8 +25,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  // const headersObj = await headers();
-  // const cookies = headersObj.get('cookie')
+  const headersObj = await headers();
+  const cookies = headersObj.get('cookie')
 
   return (
     <html lang="en">
@@ -36,7 +35,7 @@ export default async function RootLayout({
       >
            {/* <ContextProvider cookies={cookies}>{children}</ContextProvider> */}
 
-           <ContextProvider>{children}</ContextProvider>
+           <ContextProvider cookies={cookies}>{children}</ContextProvider>
 
       </body>
     </html>
