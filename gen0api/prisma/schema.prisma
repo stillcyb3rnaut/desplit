@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  address     String   @unique
+  groups      Group[]  @relation("GroupUsers")  // Many-to-Many relation (user is part of multiple groups)
+  createdGroups Group[] @relation("GroupCreator") // One-to-Many relation (user has created multiple groups)
+  contacts    String[]  @default([])               
+  oweMoney    Int      @default(0) // Money user will get from others             
+  owedToUser  Int      @default(0) // Money user has to give to others      
+
+   // Many-to-many relation through Debt model
+  debtsOwed    Debt[] @relation("debtor")
+  debtsLent    Debt[] @relation("creditor")
+
+  createdAt   DateTime @default(now()) 
+}
+
+
+model Debt {
+  id        Int     @id @default(autoincrement())
+  debtorId  Int
+  creditorId Int
+  amount    Int    // Amount debtor owes to creditor
+  createdAt DateTime @default(now())
+
+  // Relationships
+  debtor   User @relation("debtor", fields: [debtorId], references: [id])
+  creditor User @relation("creditor", fields: [creditorId], references: [id])
+
+  @@unique([debtorId, creditorId]) // Ensure a unique debt record per user pair
+}
+
+model Group {
+  id          Int      @id @default(autoincrement())
+  name        String                                    
+  description String                                    
+  Users       User[] @relation("GroupUsers")  // Many-to-Many relation
+  creatorId   Int
+  creator     User    @relation("GroupCreator", fields: [creatorId], references: [id])                                  
+  createdAt   DateTime @default(now())                  
+
+  @@index([name])                                       
+}
+
+
+
+
+ 
+
+
