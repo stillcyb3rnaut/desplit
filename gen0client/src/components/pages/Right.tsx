@@ -1,62 +1,34 @@
-'use client'
+"use client";
 
-import { useAppKitAccount } from "@reown/appkit/react";
-import axios from "axios";
-import { useEffect, useState } from "react";
-
+import { useAppContext } from "@/context/AppContext";
+import { shortAddr } from "../utils/AddressShortener";
+ 
 export function Right() {
-    const [hash, setHash] = useState("");
-    const [moneyIN, setMoneyIN] = useState(0);
-    const [moneyOut, setMoneyOut] = useState(0);
+  const { pathname, moneyIN, moneyOut } = useAppContext();
+  const counterparty = pathname.split("/").pop();
+  const isSettled = moneyIN === moneyOut;
+  
+  if(!pathname.includes('contact')){
+    return <div className="bg-slate-900 h-screen"></div>
+  }
+  return (
+    <div className="w-full p-4 text-white bg-slate-900 h-screen">
 
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-    const { address } = useAppKitAccount();
-
-    useEffect(() => {
-        async function apiCall() {
-            if (!hash || !address) return; // Ensure values exist before API call
-            const counterparty = hash.split('/').pop();
-            if (!counterparty) return;
-
-            try {
-                const [incoming, outgoing] = await Promise.all([
-                    axios.post(`${backendUrl}/api/v0/getDebt`, {
-                        creditorAddress: address,
-                        debtorAddress: counterparty,
-                    }),
-                    axios.post(`${backendUrl}/api/v0/getDebt`, {
-                        creditorAddress: counterparty,
-                        debtorAddress: address,
-                    })
-                ]);
-
-                setMoneyIN(incoming.data.amount || 0);
-                setMoneyOut(outgoing.data.amount || 0);
-                console.log(incoming);
-                
-            } catch (error) {
-                console.error("Error fetching debt data:", error);
-            }
-        }
-
-        apiCall();
-    }, [backendUrl,hash, address]);
-
-    useEffect(() => {
-        setHash(window.location.hash); // Get current hash
-
-        const handleHashChange = () => {
-            setHash(window.location.hash);
-        };
-
-        window.addEventListener("hashchange", handleHashChange);
-        return () => window.removeEventListener("hashchange", handleHashChange);
-    }, [hash]);
-
-    return (
-        <div className="w-[100%] bg-cyan-700 p-4 text-white">
-            <p> You have to give: <strong>{moneyOut}</strong></p>
-            <p>You will receive: <strong>{moneyIN}</strong></p>
-        </div>
-    );
+      {counterparty ? (
+        isSettled ? (
+          <div>You and {shortAddr(counterparty)} are settled</div>
+        ) : moneyIN > moneyOut ? (
+          <div className="text-green-500">
+            {shortAddr(counterparty)} owes you ${moneyIN - moneyOut}
+          </div>
+        ) : (
+          <div className="text-red-500">
+            You owe {shortAddr(counterparty)} ${moneyOut - moneyIN}
+          </div>
+        )
+      ) : (
+        <div>No counterparty selected</div>
+      )}
+    </div>
+  );
 }

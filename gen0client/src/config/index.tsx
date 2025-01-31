@@ -5,12 +5,12 @@ import { SolanaAdapter } from '@reown/appkit-adapter-solana';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
 
 // import { mainnet, arbitrum, sepolia, solana, solanaTestnet, solanaDevnet,AppKitNetwork } from '@reown/appkit/networks';
-import { mainnet, solana, AppKitNetwork } from '@reown/appkit/networks';
+import { mainnet, solana,solanaDevnet, AppKitNetwork } from '@reown/appkit/networks';
  
 import { SolflareWalletAdapter, PhantomWalletAdapter, SafePalWalletAdapter } from '@solana/wallet-adapter-wallets';
 
 // Supported networks
-const networks: [AppKitNetwork, ...AppKitNetwork[]] = [ solana, mainnet];
+const networks: [AppKitNetwork, ...AppKitNetwork[]] = [ solana,solanaDevnet,   mainnet];
 
 // Project ID from .env
 export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID as string;

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
  import { headers } from 'next/headers' // added
 import ContextProvider from '@/context';
+import { AppProvider,   } from "@/context/AppContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "gen0",
-  description: "Your overall summary for entire web3",
+  title: "desplit",
+  description: "Split and settle onchain",
 };
 
 export default async function RootLayout({
@@ -34,8 +35,15 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
            {/* <ContextProvider cookies={cookies}>{children}</ContextProvider> */}
+               
+           <ContextProvider cookies={cookies}>
+           <AppProvider>
 
-           <ContextProvider cookies={cookies}>{children}</ContextProvider>
+            {children}
+            
+            </AppProvider>
+            
+            </ContextProvider>
 
       </body>
     </html>

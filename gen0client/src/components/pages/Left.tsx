@@ -1,66 +1,64 @@
-'use client'
+"use client";
 
-import { useAppKitAccount } from '@reown/appkit/react';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import { useAppContext } from "@/context/AppContext";
+import { Plus } from "lucide-react";
+import Link from "next/link";
+import { shortAddr } from "../utils/AddressShortener";
 
 export function Left() {
-  const router = useRouter();
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-  const { isConnected, address } = useAppKitAccount();
-
-  const [contacts, setContacts] = useState<string[]>([]);
-  const [groups, setGroups] = useState<{ id: number; name: string; description: string }[]>([]);
-
-  useEffect(() => {
-    if (!address || !backendUrl) return;
-
-    const fetchData = async () => {
-      try {
-        // Fetch contacts
-        const contactsRes = await axios.get(`${backendUrl}/api/v0/getContacts/${address}`);
-        setContacts(contactsRes.data.contacts || []);
-
-        // Fetch groups
-        const groupsRes = await axios.get(`${backendUrl}/api/v0/getGroups/${address}`);
-        setGroups(groupsRes.data.groups || []); // Store entire objects, not just names
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, [address, isConnected, backendUrl]);
+  const { contacts, groups,   refreshData } = useAppContext();
 
   return (
-    <div>
-      <h2 onClick={() => router.push('/#/dashboard')} className="cursor-pointer ">Dashboard</h2>
+    <div className="p-4 text-white h-screen w-full flex flex-col gap-6 bg-slate-900 ">
+      {/* Dashboard */}
+      <Link href="/dashboard">
+        <h2 className="cursor-pointer text-xl font-semibold hover:text-gray-300 hover:underline transition">
+          Dashboard
+        </h2>
+      </Link>
 
-      <div>
-        <h3>Groups</h3>
-        <button className="bg-slate-600 rounded-xl ml-2">Create or Join Groups</button>
-        <ul>
+      {/* Groups Section */}
+      <div className="space-y-2">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-medium">Groups</h3>
+          <button onClick={refreshData} className="p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition">
+            <Plus size={18} />
+          </button>
+        </div>
+        <ul className="max-h-[200px] overflow-y-auto pr-2 space-y-2 scrollbar-thin scrollbar-thumb-gray-700">
           {groups.length > 0 ? (
             groups.map((group) => (
-              <li className='cursor-pointer' onClick={()=>router.push(`#/group/${group.id}`)} key={group.id}>
-                <strong>{group.name}</strong>
+              <li key={group.id} className="cursor-pointer bg-gray-800 p-2 rounded-lg hover:bg-gray-700 transition">
+                <Link href={`/group/${group.id}`} className="block">
+                  <strong>{group.name}</strong>
+                </Link>
               </li>
             ))
           ) : (
-            <li>No groups joined yet</li>
+            <li className="text-gray-400">No groups joined yet</li>
           )}
         </ul>
       </div>
 
-      <div>
-        <h3>Contacts</h3>
-        <button className="bg-slate-600 rounded-xl ml-2">Add New Contact Addresses</button>
-        <ul>
+      {/* Contacts Section */}
+      <div className="space-y-2">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-medium">Contacts</h3>
+          <button onClick={refreshData} className="p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition">
+            <Plus size={18} />
+          </button>
+        </div>
+        <ul className="max-h-[200px] overflow-y-auto pr-2 space-y-2 scrollbar-thin scrollbar-thumb-gray-700">
           {contacts.length > 0 ? (
-            contacts.map((contact, index) => <li className='cursor-pointer' onClick={()=>router.push(`#/contact/${contact}`)} key={index}>{contact}</li>)
+            contacts.map((contact, index) => (
+              <li key={index} className="cursor-pointer bg-gray-800 p-2 rounded-lg hover:bg-gray-700 transition">
+                <Link href={`/contact/${contact}`} className="block">
+                  {shortAddr(contact)}
+                </Link>
+              </li>
+            ))
           ) : (
-            <li>No contacts found</li>
+            <li className="text-gray-400">No contacts found</li>
           )}
         </ul>
       </div>

@@ -16,3 +16,9 @@ exports.debtRouter = (0, express_1.Router)();
 exports.debtRouter.post('/getDebt', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, debt_controller_1.getDebtAmount)(req, res);
 }));
+exports.debtRouter.post('/addDebt', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield (0, debt_controller_1.addDebt)(req, res);
+}));
+exports.debtRouter.post('/settleDebt', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield (0, debt_controller_1.settleDebt)(req, res);
+}));
