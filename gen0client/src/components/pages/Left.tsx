@@ -6,7 +6,7 @@ import Link from "next/link";
 import { shortAddr } from "../utils/AddressShortener";
 
 export function Left() {
-  const { contacts, groups,   refreshData } = useAppContext();
+  const { contacts, groups, refreshData } = useAppContext();
 
   return (
     <div className="p-4 text-white h-screen w-full flex flex-col gap-6 bg-slate-900 ">

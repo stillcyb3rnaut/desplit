@@ -130,7 +130,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         axios.get(`${backendUrl}/api/v0/getGroups/${address}`)
       ]);
 
-      setContacts(contactsRes.data.cuseCallbackontacts || []);
+      setContacts(contactsRes.data.contacts || []);
       setGroups(groupsRes.data.groups || []);
 
       const counterparty = pathname.split("/").pop();
