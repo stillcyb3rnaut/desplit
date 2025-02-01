@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAppKitAccount } from "@reown/appkit/react";
 import axios from "axios";
 import { Connection, PublicKey, Transaction, SystemProgram } from "@solana/web3.js";
@@ -9,6 +9,7 @@ import { Connection, PublicKey, Transaction, SystemProgram } from "@solana/web3.
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 const alchemyApikey = process.env.NEXT_PUBLIC_API_KEY_AC;
 const SOLANA_RPC_URL = `https://solana-mainnet.g.alchemy.com/v2/${alchemyApikey}`;
+
 
 type AppContextType = {
   pathname: string;
@@ -21,6 +22,9 @@ type AppContextType = {
   refreshData: () => void;
   settleDebt: (amount: number) => Promise<void>;
   addDebt: (creditorAddress: string, debtorAddress: string, amount: number) => Promise<void>;
+  createGroup: (name: string, description: string, members: string[], callerAddress: string) => Promise<void>;
+  addContact: (owner: string, contact: string) => Promise<void>; 
+
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -28,7 +32,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname(); // Get current pathname
   const { isConnected, address } = useAppKitAccount();
-
+  const router = useRouter();
   const [moneyIN, setMoneyIN] = useState(0);
   const [moneyOut, setMoneyOut] = useState(0);
   const [contacts, setContacts] = useState<string[]>([]);
@@ -44,6 +48,41 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       return 0;
     }
   }
+
+
+   // **Create a Group and Redirect**
+   const createGroup = useCallback(async (name: string, description: string, members: string[], callerAddress: string) => {
+    if (!name || !members.length || !callerAddress) {
+      alert("Invalid group details");
+      return;
+    }
+
+    try {
+      const response = await axios.post(`${backendUrl}/api/v0/createGroup`, {
+        name,
+        description,
+        members,
+        callerAddress,
+      });
+
+      const groupId = response.data.id; // <-- Extract groupId from response
+      alert("Group created successfully!");
+
+      refreshData(); // Refresh groups list after creation
+
+      // **Navigate to the newly created group page**
+      if (groupId) {
+        router.push(`/group/${groupId}`);
+      }
+    } catch (error) {
+      console.error("Error creating group:", error);
+      alert("Failed to create group");
+    }
+  }, [backendUrl, router]);
+
+
+
+
 
   // **Settle Debt via Solana Transaction**
   const settleDebt = useCallback(async (amount: number) => {
@@ -148,12 +187,35 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [address, pathname]);
 
+
+  //add contact
+  const addContact = useCallback(async (owner: string, contact: string) => {
+    if (!owner || !contact) {
+      alert("Owner and contact are required");
+      return;
+    }
+
+    try {
+       await axios.post(`${backendUrl}/api/v0/addContact`, {
+        owner,
+        contact,
+      });
+
+      alert("Contact added successfully!");
+      refreshData(); // Refresh contacts after adding
+    } catch (error) {
+      console.error("Error adding contact:", error);
+      alert("Failed to add contact");
+    }
+  }, [backendUrl, refreshData]);
+
+
   useEffect(() => {
     refreshData();
   }, [pathname, address, isConnected, refreshData]);
 
   return (
-    <AppContext.Provider value={{ pathname, address, isConnected, moneyIN, moneyOut, contacts, groups, refreshData, settleDebt, addDebt }}>
+    <AppContext.Provider value={{ pathname, address, isConnected, moneyIN, moneyOut, contacts, groups, refreshData, settleDebt, addDebt ,createGroup,addContact}}>
       {children}
     </AppContext.Provider>
   );

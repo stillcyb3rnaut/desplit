@@ -1,9 +1,10 @@
 "use client";
 
 import { useAppContext } from "@/context/AppContext";
-import { Plus } from "lucide-react";
 import Link from "next/link";
 import { shortAddr } from "../utils/AddressShortener";
+import { CreateGroup } from "../utils/createGroup";
+import { AddContact } from "../utils/addContact";
 
 export function Left() {
   const { contacts, groups, refreshData } = useAppContext();
@@ -21,8 +22,9 @@ export function Left() {
       <div className="space-y-2">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-medium">Groups</h3>
-          <button onClick={refreshData} className="p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition">
-            <Plus size={18} />
+          <button onClick={refreshData} className=" rounded-full hover:bg-gray-600 transition">
+            
+            <CreateGroup/>
           </button>
         </div>
         <ul className="max-h-[200px] overflow-y-auto pr-2 space-y-2 scrollbar-thin scrollbar-thumb-gray-700">
@@ -44,9 +46,9 @@ export function Left() {
       <div className="space-y-2">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-medium">Contacts</h3>
-          <button onClick={refreshData} className="p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition">
-            <Plus size={18} />
-          </button>
+          <button onClick={refreshData} className=" rounded-full  hover:bg-gray-600 transition">
+            <AddContact/>
+           </button>
         </div>
         <ul className="max-h-[200px] overflow-y-auto pr-2 space-y-2 scrollbar-thin scrollbar-thumb-gray-700">
           {contacts.length > 0 ? (

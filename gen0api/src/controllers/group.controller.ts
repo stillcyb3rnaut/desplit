@@ -14,7 +14,7 @@ export async function createGroup(req: Request, res: Response) {
   if (members.length === 0) {
     return res.status(401).json({ msg: "At least add one member" });
   }
-
+ 
   try {
     // Ensure all members + caller are unique
     const allMembers: string[] = Array.from(new Set([...members, callerAddress]));

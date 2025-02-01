@@ -16,4 +16,7 @@ const router = (0, express_1.Router)();
 router.get("/getContacts/:address", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, contact_controller_1.getContacts)(req, res);
 }));
+router.post("/addContact", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield (0, contact_controller_1.addContact)(req, res);
+}));
 exports.default = router;
